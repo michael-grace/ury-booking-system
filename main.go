@@ -18,6 +18,14 @@ import (
 func main() {
 
 	/*
+		Sets Config
+	*/
+
+	config.ConfigurationSetup()
+
+	fmt.Println(config.Config.LogFile)
+
+	/*
 		Opens and sets up log file
 	*/
 	logFile, err := os.OpenFile(config.Config.LogFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
