@@ -7,8 +7,8 @@ import (
 // HTTPRequest is the layout all bodies in an api call are layed out
 // Authentication TBD
 type HTTPRequest struct {
-	messageHead string
-	payload     interface{} // Possibly make a specific interface
+	MessageHead string
+	Payload     interface{} // Possibly make a specific interface
 }
 
 type bookingTimeslots struct {
@@ -29,7 +29,7 @@ type BookingRequest struct {
 
 // CancelRequest is for cancelling items based on booking ID
 type CancelRequest struct {
-	cancelBookingID []int
+	CancelBookingID []int
 }
 
 type movingTimeslots struct {
