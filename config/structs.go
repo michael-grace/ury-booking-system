@@ -33,12 +33,12 @@ type CancelRequest struct {
 }
 
 type movingTimeslots struct {
-	bookingID    int
+	BookingID    int
 	newStartTime time.Time
 	newEndTime   time.Time
 }
 
 // MoveRequest is for moving bookings
 type MoveRequest struct {
-	moveRequests []movingTimeslots
+	MoveRequests []movingTimeslots
 }

@@ -8,6 +8,19 @@ import (
 	"net/http"
 )
 
+func cancelBookings(cancelRequest config.CancelRequest) []error {
+	var errors []error
+	for _, val := range cancelRequest.CancelBookingID {
+		_, err := config.Database.Exec("DELETE FROM bookings.bookings WHERE booking_id = $1", val)
+		if err != nil {
+			errors = append(errors, err)
+		}
+	}
+
+	return errors
+
+}
+
 // CancelHandler allows bookings to be removed from the system
 func CancelHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -40,13 +53,8 @@ func CancelHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, "Bad JSON - Cancel Object")
 	} else {
-		var errors []error
-		for _, val := range cancelRequest.CancelBookingID {
-			_, err = config.Database.Exec("DELETE FROM bookings.bookings WHERE booking_id = $1", val)
-			if err != nil {
-				errors = append(errors, err)
-			}
-		}
+
+		errors := cancelBookings(cancelRequest)
 
 		if len(errors) != 0 {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -55,6 +63,7 @@ func CancelHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 			fmt.Fprint(w, "Bookings Removed")
 		}
+
 	}
 
 }
