@@ -23,8 +23,6 @@ func main() {
 
 	config.ConfigurationSetup()
 
-	fmt.Println(config.Config.LogFile)
-
 	/*
 		Opens and sets up log file
 	*/
