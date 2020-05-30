@@ -17,20 +17,8 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 	   First, sort the HTTP Request
 	*/
 
-	reqBody, err := ioutil.ReadAll(r.Body)
-
+	apiRequest, err := baseHTTPRequest(w, r)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, "No Body")
-		return
-	}
-
-	var apiRequest config.HTTPRequest
-	err = json.Unmarshal(reqBody, &apiRequest)
-
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, "Bad JSON")
 		return
 	}
 

@@ -24,45 +24,33 @@ func cancelBookings(cancelRequest config.CancelRequest) []error {
 // CancelHandler allows bookings to be removed from the system
 func CancelHandler(w http.ResponseWriter, r *http.Request) {
 
-	var apiRequest config.HTTPRequest
-
-	reqBody, err := ioutil.ReadAll(r.Body)
-
+	apiRequest, err := baseHTTPRequest(w, r)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, "No Body")
+		return
 	}
 
-	err = json.Unmarshal(reqBody, &apiRequest)
+	/*
+	   Atttempts to put payload into cancel request
+	   Goes through each booking id, and removing from DB
+	   HTTP writes any errors that occur, or success
+	*/
 
-	if err != nil {
+	cancelRequest, ok := apiRequest.Payload.(config.CancelRequest)
+	if !ok {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, "Bad JSON")
+		fmt.Fprint(w, "Bad JSON - Cancel Object")
 	} else {
 
-		/*
-		   Atttempts to put payload into cancel request
-		   Goes through each booking id, and removing from DB
-		   HTTP writes any errors that occur, or success
-		*/
+		errors := cancelBookings(cancelRequest)
 
-		cancelRequest, ok := apiRequest.Payload.(config.CancelRequest)
-		if !ok {
-			w.WriteHeader(http.StatusBadRequest)
-			fmt.Fprint(w, "Bad JSON - Cancel Object")
+		if len(errors) != 0 {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, "Problem Removing Bookings", errors)
 		} else {
-
-			errors := cancelBookings(cancelRequest)
-
-			if len(errors) != 0 {
-				w.WriteHeader(http.StatusInternalServerError)
-				fmt.Fprint(w, "Problem Removing Bookings", errors)
-			} else {
-				w.WriteHeader(http.StatusOK)
-				fmt.Fprint(w, "Bookings Removed")
-			}
-
+			w.WriteHeader(http.StatusOK)
+			fmt.Fprint(w, "Bookings Removed")
 		}
 
 	}
+
 }
