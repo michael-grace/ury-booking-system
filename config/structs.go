@@ -13,16 +13,17 @@ type HTTPRequest struct {
 
 // Booking is an actual booking in the system
 type Booking struct {
-	bookingID    int
-	userID       int
-	typeID       int
-	resourceID   int
-	preferenceID int
-	givenID      int
-	timeslotID   int
-	startTime    time.Time
-	endTime      time.Time
-	publicID     int
+	bookingID           int
+	userID              int
+	typeID              int
+	resourceID          int
+	preferenceID        int
+	givenID             int
+	timeslotID          int
+	startTime           time.Time
+	endTime             time.Time
+	publicID            int
+	ApplicationDateTime time.Time
 }
 
 type bookingTimeslots struct {
