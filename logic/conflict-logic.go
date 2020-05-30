@@ -5,6 +5,6 @@ import (
 )
 
 // DealWithConflicts holds the logic for determining where priorities are in bookings
-func DealWithConflicts(request config.BookingRequest, conflicts []config.Booking) {
+func DealWithConflicts(request config.BookingRequest, conflicts [][]config.Booking) {
 
 }

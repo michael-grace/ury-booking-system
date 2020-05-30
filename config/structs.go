@@ -34,11 +34,11 @@ type bookingTimeslots struct {
 // BookingRequest is a request from a user about why and when
 // they'd like to book a resource
 type BookingRequest struct {
-	requestlevel int
-	resource     int
-	preference   int
-	memberid     int
-	requests     []bookingTimeslots
+	Requestlevel int
+	Resource     int
+	Preference   int
+	MemberID     int
+	Requests     []bookingTimeslots
 }
 
 // CancelRequest is for cancelling items based on booking ID
