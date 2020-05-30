@@ -24,9 +24,49 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(reqBody, &apiRequest)
 
 	if err != nil {
-		if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "Bad JSON")
+	} else {
+		addRequest, ok := apiRequest.Payload.(config.BookingRequest)
+		if !ok {
 			w.WriteHeader(http.StatusBadRequest)
-			fmt.Fprint(w, "Bad JSON")
+			fmt.Fprint(w, "Bad JSON - Add Object")
+		} else {
+			var conflicts []config.Booking
+
+			// TODO Logic Here
+			getConflictQuery := "SELECT * FROM bookings.bookings WHERE bookings.resource_id=$1 AND "
+
+			rows, err := config.Database.Query(getConflictQuery)
+			defer rows.Close()
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprint(w, "Database Query Failed")
+			} else {
+				if rows.Next() {
+					var conflictBooking config.Booking
+					err = rows.Scan(&conflictBooking)
+					if err != nil {
+						w.WriteHeader(http.StatusInternalServerError)
+						fmt.Fprint(w, "Database Output Flawed")
+					} else {
+						conflicts = append(conflicts, conflictBooking)
+						for rows.Next() {
+							var conflictBooking config.Booking
+							err = rows.Scan(&conflictBooking)
+							if err != nil {
+								w.WriteHeader(http.StatusInternalServerError)
+								fmt.Fprint(w, "Database Output Flawed")
+							} else {
+								conflicts = append(conflicts, conflictBooking)
+							}
+						}
+						logic.DealWithConflicts(addRequest, conflicts)
+					}
+				} else {
+					// Schedule
+				}
+			}
 		}
 	}
 

@@ -11,6 +11,20 @@ type HTTPRequest struct {
 	Payload     interface{} // Possibly make a specific interface
 }
 
+// Booking is an actual booking in the system
+type Booking struct {
+	bookingID    int
+	userID       int
+	typeID       int
+	resourceID   int
+	preferenceID int
+	givenID      int
+	timeslotID   int
+	startTime    time.Time
+	endTime      time.Time
+	publicID     int
+}
+
 type bookingTimeslots struct {
 	itemid    int
 	starttime time.Time
