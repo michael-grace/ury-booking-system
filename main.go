@@ -38,8 +38,7 @@ func main() {
 		In Progress Bookings
 	*/
 
-	var inProgressBookings map[int]config.InProgressBooking
-
+	inProgressBookings := make(map[int]config.InProgressBooking)
 	/*
 		Routes HTTP Calls
 	*/

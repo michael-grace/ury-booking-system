@@ -79,7 +79,7 @@ func DealWithConflicts(request config.BookingRequest, conflicts [][]config.Booki
 		} else {
 			preferenceInConflicts := false
 			for _, con := range conflicts[key] {
-				if request.Preference == con.Preference {
+				if request.Preference == con.Preference && request.Preference != 0 {
 					preferenceInConflicts = true
 					break
 				}

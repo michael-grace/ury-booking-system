@@ -40,7 +40,7 @@ func AddHandler(w http.ResponseWriter, r *http.Request, InProgressBookings map[i
 
 	// TODO Logic Here
 	getConflictQuery := `SELECT * FROM bookings.bookings WHERE bookings.resource=$1 AND 
-		NOT (bookings.end_time <= $2 OR bookings.start_time >= $3;)`
+		NOT (bookings.end_time <= $2 OR bookings.start_time >= $3);`
 
 	for _, requestTime := range addRequest.Requests {
 
@@ -66,7 +66,19 @@ func AddHandler(w http.ResponseWriter, r *http.Request, InProgressBookings map[i
 
 		for rows.Next() {
 			var conflictBooking config.Booking
-			err = rows.Scan(&conflictBooking)
+			err = rows.Scan(
+				&conflictBooking.BookingID,
+				&conflictBooking.MemberID,
+				&conflictBooking.RequestLevel,
+				&conflictBooking.Resource,
+				&conflictBooking.Preference,
+				&conflictBooking.GivenResource,
+				&conflictBooking.TimeslotID,
+				&conflictBooking.StartTime,
+				&conflictBooking.EndTime,
+				&conflictBooking.PublicID,
+				&conflictBooking.ApplicationDateTime,
+			)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Fprint(w, "Database Output Flawed")
