@@ -88,6 +88,7 @@ func PrioritiesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var toReturn PriorityReturn
+	toReturn.Priorities = make(map[string]int)
 
 	for rows.Next() {
 		var level int
