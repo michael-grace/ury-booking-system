@@ -72,3 +72,40 @@ func ResourceHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, string(jsonData))
 
 }
+
+// PriorityReturn is for the return to the user
+type PriorityReturn struct {
+	Priorities map[string]int `json:"requestLevels"`
+}
+
+// PrioritiesHandler deals with returning the types of priorites available
+func PrioritiesHandler(w http.ResponseWriter, r *http.Request) {
+
+	rows, err := config.Database.Query("SELECT * FROM bookings.request_levels;")
+	defer rows.Close()
+	if err != nil {
+		fmt.Fprint(w, err)
+	}
+
+	var toReturn PriorityReturn
+
+	for rows.Next() {
+		var level int
+		var description string
+		err := rows.Scan(&level, &description)
+		if err != nil {
+			fmt.Fprint(w, err)
+		}
+		toReturn.Priorities[description] = level
+	}
+
+	jsonData, err := json.MarshalIndent(toReturn, "", "	")
+
+	if err != nil {
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprint(w, string(jsonData))
+
+}
