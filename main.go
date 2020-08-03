@@ -34,11 +34,17 @@ func main() {
 	log.SetOutput(logFile)
 
 	/*
+		In Progress Bookings
+	*/
+
+	var inProgressBookings []config.InProgressBooking
+
+	/*
 		Routes HTTP Calls
 	*/
 
 	http.HandleFunc("/get", api.GetHandler)
-	http.HandleFunc("/add", api.AddHandler)
+	http.HandleFunc("/add", func(w http.ResponseWriter, r *http.Request) { api.AddHandler(w, r, inProgressBookings) })
 	http.HandleFunc("/cancel", api.CancelHandler)
 	http.HandleFunc("/move", api.MoveHandler)
 

@@ -6,12 +6,13 @@ import (
 	"github.com/michael-grace/ury-booking-system/config"
 	"github.com/michael-grace/ury-booking-system/logic"
 	// "io/ioutil"
+	"math/rand"
 	"net/http"
 )
 
 // AddHandler takes the requests, and attempts to add them to the bookings
 // and can also call logic functions if there are conflicts
-func AddHandler(w http.ResponseWriter, r *http.Request) {
+func AddHandler(w http.ResponseWriter, r *http.Request, InProgressBookings []config.InProgressBooking) {
 
 	/*
 	   First, sort the HTTP Request
@@ -39,7 +40,7 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO Logic Here
 	getConflictQuery := "SELECT * FROM bookings.bookings WHERE bookings.resource_id=$1 AND "
 
-	for _, requestTime := range addRequest.Requests {
+	for _, _ = range addRequest.Requests { // Second is requestTime, _ so it builds for now
 
 		/*
 			Each DB Query (essentially timeslot)
@@ -80,16 +81,28 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	toSend := make(map[string]interface{})
-	toSend["returningID"] = 123
-	toSend["bookingResponse"] = returnToUser
+	userData := config.InProgressBooking{
+		ManageType: returnToUser,
+	}
 
-	jsonData, err := json.MarshalIndent(toSend, "", "	")
+	for _, val := range userData.ManageType {
+		if val.Header == logic.MANAGE {
+			userData.ProgressID = rand.Intn(1000000000)
+			InProgressBookings = append(InProgressBookings, userData)
+		}
+	}
+
+	if userData.ProgressID == 0 && userData.ManageType[0].Header == logic.ACCEPT {
+		// Schedule These Bookings
+	}
+
+	jsonData, err := json.MarshalIndent(userData, "", "	")
 
 	if err != nil {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprint(w, jsonData)
 
 }

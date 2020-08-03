@@ -1,14 +1,5 @@
 package logic
 
-import "github.com/michael-grace/ury-booking-system/config"
-
-type ManageType struct {
-	Header   string
-	Body     string
-	Booking  config.BookingTimeslots
-	Conflict config.Booking
-}
-
 const (
 	// ACCEPT is for Accepted Bookings
 	ACCEPT = "Accepted Booking"

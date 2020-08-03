@@ -57,3 +57,16 @@ type movingTimeslots struct {
 type MoveRequest struct {
 	MoveRequests []movingTimeslots
 }
+
+type ManageType struct {
+	Header   string
+	Body     string
+	Booking  BookingTimeslots
+	Conflict Booking
+}
+
+// InProgressBooking is for a booking that is waiting for user confirmation
+type InProgressBooking struct {
+	ProgressID int
+	ManageType []ManageType
+}
