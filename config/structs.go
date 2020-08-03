@@ -7,39 +7,39 @@ import (
 // HTTPRequest is the layout all bodies in an api call are layed out
 // Authentication TBD
 type HTTPRequest struct {
-	MessageHead string
-	Payload     interface{} // Possibly make a specific interface
+	MessageHead string      `json:"messageHead"`
+	Payload     interface{} `json:"payload"` // Possibly make a specific interface
 }
 
 // Booking is an actual booking in the system
 type Booking struct {
-	BookingID           int
-	MemberID            int
-	RequestLevel        int
-	Resource            int
-	Preference          int
-	GivenResource       int
-	TimeslotID          int
-	StartTime           time.Time
-	EndTime             time.Time
-	PublicID            int
-	ApplicationDateTime time.Time
+	BookingID           int       `json:"bookingID"`
+	MemberID            int       `json:"memberID"`
+	RequestLevel        int       `json:"requestLevel"`
+	Resource            int       `json:"resource"`
+	Preference          int       `json:"preference"`
+	GivenResource       int       `json:"givenResource"`
+	TimeslotID          int       `json:"timeslotID"`
+	StartTime           time.Time `json:"startTime"`
+	EndTime             time.Time `json:"endTime"`
+	PublicID            int       `json:"publicID"`
+	ApplicationDateTime time.Time `json:"applicationDateTime"`
 }
 
 type BookingTimeslots struct {
-	TimeslotID int
-	StartTime  time.Time
-	EndTime    time.Time
+	TimeslotID int       `json:"timeslotID"`
+	StartTime  time.Time `json:"startTime"`
+	EndTime    time.Time `json:"endTime"`
 }
 
 // BookingRequest is a request from a user about why and when
 // they'd like to book a resource
 type BookingRequest struct {
-	RequestLevel int
-	Resource     int
-	Preference   int
-	MemberID     int
-	Requests     []BookingTimeslots
+	RequestLevel int                `json:"requestLevel"`
+	Resource     int                `json:"resource"`
+	Preference   int                `json:"preference"`
+	MemberID     int                `json:"memberID"`
+	Requests     []BookingTimeslots `json:"requests"`
 }
 
 // CancelRequest is for cancelling items based on booking ID
@@ -59,20 +59,20 @@ type MoveRequest struct {
 }
 
 type ManageType struct {
-	Header   string
-	Body     string
-	Booking  BookingTimeslots
-	Conflict Booking
+	Header   string           `json:"header"`
+	Body     string           `json:"body"`
+	Booking  BookingTimeslots `json:"booking"`
+	Conflict Booking          `json:"conflict"`
 }
 
 // InProgressBooking is for a booking that is waiting for user confirmation
 type InProgressBooking struct {
-	ProgressID     int
-	BookingRequest BookingRequest
-	ManageType     []ManageType
+	ProgressID     int            `json:"progressID"`
+	BookingRequest BookingRequest `json:"bookingRequest"`
+	ManageType     []ManageType   `json:"manageType"`
 }
 
 type ManageRequest struct {
-	ProgressID    int
-	UserResponses []interface{}
+	ProgressID    int           `json:"progressID"`
+	UserResponses []interface{} `json:"userResponses"`
 }
