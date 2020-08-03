@@ -5,13 +5,13 @@ import (
 )
 
 // TheBigScheduler schedules things in the DB given a booking b
-func TheBigScheduler(b config.Booking) (err error) {
+func TheBigScheduler(b config.Booking) error {
 
 	scheduleQuery := `INSERT INTO bookings.bookings 
 	(member_id, request_level, resource, preference, given_resource, timeslot_id, start_time, end_time, public_id, application_datetime)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);`
 
-	db, err := config.Database.Query(scheduleQuery,
+	_, err := config.Database.Query(scheduleQuery,
 		b.MemberID,
 		b.RequestLevel,
 		b.Resource,
@@ -23,9 +23,7 @@ func TheBigScheduler(b config.Booking) (err error) {
 		b.PublicID,
 		b.ApplicationDateTime)
 
-	defer db.Close()
-
-	return
+	return err
 
 	// TODO: Allocations
 

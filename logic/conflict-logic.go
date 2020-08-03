@@ -5,7 +5,7 @@ import (
 )
 
 func getNumberOfResources(resource int) (int, error) {
-	numberOfResourcesQuery := "SELECT COUNT(unique_resources.unique_id) FROM bookings.unique_resources WHERE unique_resources.resource_id = $1"
+	numberOfResourcesQuery := "SELECT COUNT(unique_resources.unique_id) FROM bookings.unique_resources WHERE unique_resources.resource = $1;"
 	rows, err := config.Database.Query(numberOfResourcesQuery, resource)
 	defer rows.Close()
 	if err != nil {

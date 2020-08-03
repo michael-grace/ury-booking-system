@@ -8,13 +8,13 @@ create table bookings.request_levels(
 );
 
 create table bookings.resources(
-    resource int,
+    resource SERIAL,
     name varchar,
     PRIMARY KEY (resource)
 );
 
 create table bookings.unique_resources(
-    unique_id int,
+    unique_id SERIAL,
     resource int,
     name varchar,
     primary key (unique_id),
@@ -22,13 +22,13 @@ create table bookings.unique_resources(
 );
 
 create table bookings.public_contacts(
-    public_id int,
+    public_id SERIAL,
     contact varchar,
     primary key (public_id)
 );
 
 create table bookings.bookings(
-    booking_id int,
+    booking_id SERIAL,
     member_id int,
     request_level int,
     resource int,
@@ -45,6 +45,9 @@ create table bookings.bookings(
     foreign key (resource) references bookings.resources(resource),
     foreign key (preference) references bookings.unique_resources(unique_id),
     foreign key (given_resource) references bookings.unique_resources(unique_id),
-    foreign key (timeslot_id) references schedule.show_season_timeslot(show_season_timeslot_id),
+    --foreign key (timeslot_id) references schedule.show_season_timeslot(show_season_timeslot_id), REMOVED SO TIMESLOT CAN BE SCHEDULED SIMULTANEOUSLY
     foreign key (public_id) references bookings.public_contacts(public_id)
 );
+
+INSERT INTO bookings.public_contacts (public_contacts.public_id, public_contacts.contact) VALUES (0, "Not Public")
+INSERT INTO bookings.unique_resources (unique_resources.unique_id, unique_resources.description) VALUES (0, "No Preference")

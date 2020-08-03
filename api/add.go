@@ -7,6 +7,7 @@ import (
 	"github.com/michael-grace/ury-booking-system/logic"
 	"time"
 	// "io/ioutil"
+	"github.com/mitchellh/mapstructure"
 	"math/rand"
 	"net/http"
 )
@@ -24,9 +25,10 @@ func AddHandler(w http.ResponseWriter, r *http.Request, InProgressBookings map[i
 		return
 	}
 
-	addRequest, ok := apiRequest.Payload.(config.BookingRequest)
+	var addRequest config.BookingRequest
+	err = mapstructure.Decode(apiRequest.Payload, &addRequest)
 
-	if !ok {
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, "Bad JSON - Add Object")
 		return
@@ -39,8 +41,8 @@ func AddHandler(w http.ResponseWriter, r *http.Request, InProgressBookings map[i
 	var conflicts [][]config.Booking
 
 	// TODO Logic Here
-	getConflictQuery := `SELECT * FROM bookings.bookings WHERE bookings.resourceid=$1 AND 
-		!(bookings.end_time <= $2 OR bookings.start_time >= $3)`
+	getConflictQuery := `SELECT * FROM bookings.bookings WHERE bookings.resource=$1 AND 
+		NOT (bookings.end_time <= $2 OR bookings.start_time >= $3;)`
 
 	for _, requestTime := range addRequest.Requests {
 
@@ -49,10 +51,12 @@ func AddHandler(w http.ResponseWriter, r *http.Request, InProgressBookings map[i
 		*/
 
 		rows, err := config.Database.Query(getConflictQuery, addRequest.Resource, requestTime.StartTime, requestTime.EndTime) // requestTime gets used here
-		defer rows.Close()
+		if rows != nil {
+			defer rows.Close()
+		}
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "Database Query Failed")
+			fmt.Fprintf(w, "Database Query Failed %v \n", err)
 			return
 		}
 
@@ -98,7 +102,7 @@ func AddHandler(w http.ResponseWriter, r *http.Request, InProgressBookings map[i
 	if userData.ProgressID == 0 && userData.ManageType[0].Header == logic.ACCEPT {
 		// Schedule These Bookings
 		for _, b := range userData.ManageType {
-			logic.TheBigScheduler(config.Booking{
+			err = logic.TheBigScheduler(config.Booking{
 				MemberID:            addRequest.MemberID,
 				RequestLevel:        addRequest.RequestLevel,
 				Resource:            addRequest.Resource,
@@ -108,6 +112,9 @@ func AddHandler(w http.ResponseWriter, r *http.Request, InProgressBookings map[i
 				EndTime:             b.Booking.EndTime,
 				ApplicationDateTime: time.Now(),
 			})
+			if err != nil {
+				fmt.Fprintf(w, "Problem Scheduling %v \n", err)
+			}
 		}
 	}
 
@@ -118,6 +125,6 @@ func AddHandler(w http.ResponseWriter, r *http.Request, InProgressBookings map[i
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprint(w, jsonData)
+	fmt.Fprint(w, string(jsonData))
 
 }
