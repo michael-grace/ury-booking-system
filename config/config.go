@@ -31,4 +31,9 @@ func ConfigurationSetup() {
 	if err != nil {
 		panic(err)
 	}
+
+	Database, err = NewDatabaseConnection()
+	if err != nil {
+		panic(err)
+	}
 }

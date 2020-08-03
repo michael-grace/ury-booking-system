@@ -12,7 +12,7 @@ import (
 var Database *sql.DB
 
 // NewDatabaseConnection creates a connection to the database for the system
-func NewDatabaseConnection() {
+func NewDatabaseConnection() (*sql.DB, error) {
 	sqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		Config.Database.Host,
@@ -31,4 +31,6 @@ func NewDatabaseConnection() {
 	if err != nil {
 		log.Panic("Can't Ping Database", err)
 	}
+
+	return Database, err
 }
