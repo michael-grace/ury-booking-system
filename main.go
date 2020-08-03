@@ -51,6 +51,7 @@ func main() {
 	http.HandleFunc("/manage", func(w http.ResponseWriter, r *http.Request) { api.ManageHandler(w, r, inProgressBookings) })
 
 	http.HandleFunc("/info/resources", api.ResourceHandler)
+	http.HandleFunc("/info/requestlevels", api.PrioritiesHandler)
 
 	/*
 		Starts HTTP Server
