@@ -69,6 +69,6 @@ func ResourceHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprint(w, jsonData)
+	fmt.Fprint(w, string(jsonData))
 
 }
