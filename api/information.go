@@ -62,7 +62,7 @@ func ResourceHandler(w http.ResponseWriter, r *http.Request) {
 		resources = append(resources, resource)
 	}
 
-	jsonData, err := json.MarshalIndent(resources, "", "	")
+	jsonData, err := json.MarshalIndent(ResourceReturn{Resources: resources}, "", "	")
 
 	if err != nil {
 		return
