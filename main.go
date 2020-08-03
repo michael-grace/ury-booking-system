@@ -22,6 +22,7 @@ func main() {
 	*/
 
 	config.ConfigurationSetup()
+	defer config.Database.Close()
 
 	/*
 		Opens and sets up log file

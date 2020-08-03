@@ -2,7 +2,7 @@
     "logFile": "bookings.log",
     "port": 80,
     "database": {
-        "dbhost": "host",
+        "db-host": "host",
         "db-port": 5432,
         "db-user": "user",
         "db-pass": "pass",

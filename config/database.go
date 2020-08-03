@@ -25,7 +25,6 @@ func NewDatabaseConnection() (*sql.DB, error) {
 	if err != nil {
 		log.Panic("Can't Connect to Database", err)
 	}
-	defer Database.Close()
 
 	err = Database.Ping()
 	if err != nil {
