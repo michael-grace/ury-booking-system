@@ -42,7 +42,7 @@ func ResourceHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Individual Resources
-		rows2, err := config.Database.Query("SELECT unique_resources.unique_id, unique_resources.name FROM bookings.unique_resources WHERE unique_resource.resource = $1", resource.ResourceID)
+		rows2, err := config.Database.Query("SELECT unique_resources.unique_id, unique_resources.name FROM bookings.unique_resources WHERE unique_resources.resource = $1;", resource.ResourceID)
 		defer rows2.Close()
 		if err != nil {
 			fmt.Fprint(w, err)
