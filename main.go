@@ -37,7 +37,7 @@ func main() {
 		In Progress Bookings
 	*/
 
-	var inProgressBookings []config.InProgressBooking
+	var inProgressBookings map[int]config.InProgressBooking
 
 	/*
 		Routes HTTP Calls
@@ -47,6 +47,7 @@ func main() {
 	http.HandleFunc("/add", func(w http.ResponseWriter, r *http.Request) { api.AddHandler(w, r, inProgressBookings) })
 	http.HandleFunc("/cancel", api.CancelHandler)
 	http.HandleFunc("/move", api.MoveHandler)
+	http.HandleFunc("/manage", func(w http.ResponseWriter, r *http.Request) { api.ManageHandler(w, r, inProgressBookings) })
 
 	/*
 		Starts HTTP Server

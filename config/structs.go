@@ -67,6 +67,12 @@ type ManageType struct {
 
 // InProgressBooking is for a booking that is waiting for user confirmation
 type InProgressBooking struct {
-	ProgressID int
-	ManageType []ManageType
+	ProgressID     int
+	BookingRequest BookingRequest
+	ManageType     []ManageType
+}
+
+type ManageRequest struct {
+	ProgressID    int
+	UserResponses []interface{}
 }

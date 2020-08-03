@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/michael-grace/ury-booking-system/config"
 	"github.com/michael-grace/ury-booking-system/logic"
+	"time"
 	// "io/ioutil"
 	"math/rand"
 	"net/http"
@@ -12,7 +13,7 @@ import (
 
 // AddHandler takes the requests, and attempts to add them to the bookings
 // and can also call logic functions if there are conflicts
-func AddHandler(w http.ResponseWriter, r *http.Request, InProgressBookings []config.InProgressBooking) {
+func AddHandler(w http.ResponseWriter, r *http.Request, InProgressBookings map[int]config.InProgressBooking) {
 
 	/*
 	   First, sort the HTTP Request
@@ -38,15 +39,16 @@ func AddHandler(w http.ResponseWriter, r *http.Request, InProgressBookings []con
 	var conflicts [][]config.Booking
 
 	// TODO Logic Here
-	getConflictQuery := "SELECT * FROM bookings.bookings WHERE bookings.resource_id=$1 AND "
+	getConflictQuery := `SELECT * FROM bookings.bookings WHERE bookings.resourceid=$1 AND 
+		!(bookings.end_time <= $2 OR bookings.start_time >= $3)`
 
-	for _, _ = range addRequest.Requests { // Second is requestTime, _ so it builds for now
+	for _, requestTime := range addRequest.Requests {
 
 		/*
 			Each DB Query (essentially timeslot)
 		*/
 
-		rows, err := config.Database.Query(getConflictQuery) // requestTime gets used here
+		rows, err := config.Database.Query(getConflictQuery, addRequest.Resource, requestTime.StartTime, requestTime.EndTime) // requestTime gets used here
 		defer rows.Close()
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -82,18 +84,31 @@ func AddHandler(w http.ResponseWriter, r *http.Request, InProgressBookings []con
 	}
 
 	userData := config.InProgressBooking{
-		ManageType: returnToUser,
+		BookingRequest: addRequest,
+		ManageType:     returnToUser,
 	}
 
 	for _, val := range userData.ManageType {
 		if val.Header == logic.MANAGE {
 			userData.ProgressID = rand.Intn(1000000000)
-			InProgressBookings = append(InProgressBookings, userData)
+			InProgressBookings[userData.ProgressID] = userData
 		}
 	}
 
 	if userData.ProgressID == 0 && userData.ManageType[0].Header == logic.ACCEPT {
 		// Schedule These Bookings
+		for _, b := range userData.ManageType {
+			logic.TheBigScheduler(config.Booking{
+				MemberID:            addRequest.MemberID,
+				RequestLevel:        addRequest.RequestLevel,
+				Resource:            addRequest.Resource,
+				Preference:          addRequest.Preference,
+				TimeslotID:          b.Booking.TimeslotID,
+				StartTime:           b.Booking.StartTime,
+				EndTime:             b.Booking.EndTime,
+				ApplicationDateTime: time.Now(),
+			})
+		}
 	}
 
 	jsonData, err := json.MarshalIndent(userData, "", "	")
