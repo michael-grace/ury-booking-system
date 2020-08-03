@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/michael-grace/ury-booking-system/config"
 	"github.com/michael-grace/ury-booking-system/logic"
-	"io/ioutil"
+	// "io/ioutil"
 	"net/http"
 )
 
@@ -74,6 +74,22 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	logic.DealWithConflicts(addRequest, conflicts)
+	returnToUser, err := logic.DealWithConflicts(addRequest, conflicts)
+
+	if err != nil {
+		return
+	}
+
+	toSend := make(map[string]interface{})
+	toSend["returningID"] = 123
+	toSend["bookingResponse"] = returnToUser
+
+	jsonData, err := json.MarshalIndent(toSend, "", "	")
+
+	if err != nil {
+		return
+	}
+
+	fmt.Fprint(w, jsonData)
 
 }

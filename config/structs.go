@@ -13,33 +13,33 @@ type HTTPRequest struct {
 
 // Booking is an actual booking in the system
 type Booking struct {
-	bookingID           int
-	userID              int
-	typeID              int
-	resourceID          int
-	preferenceID        int
-	givenID             int
-	timeslotID          int
-	startTime           time.Time
-	endTime             time.Time
-	publicID            int
+	BookingID           int
+	MemberID            int
+	RequestLevel        int
+	Resource            int
+	Preference          int
+	GivenResource       int
+	TimeslotID          int
+	StartTime           time.Time
+	EndTime             time.Time
+	PublicID            int
 	ApplicationDateTime time.Time
 }
 
-type bookingTimeslots struct {
-	itemid    int
-	starttime time.Time
-	endtime   time.Time
+type BookingTimeslots struct {
+	TimeslotID int
+	StartTime  time.Time
+	EndTime    time.Time
 }
 
 // BookingRequest is a request from a user about why and when
 // they'd like to book a resource
 type BookingRequest struct {
-	Requestlevel int
+	RequestLevel int
 	Resource     int
 	Preference   int
 	MemberID     int
-	Requests     []bookingTimeslots
+	Requests     []BookingTimeslots
 }
 
 // CancelRequest is for cancelling items based on booking ID

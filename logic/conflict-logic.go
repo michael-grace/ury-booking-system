@@ -33,56 +33,75 @@ func getUniqueNumberOfResources(resource int) (int, error) {
 
 }
 
-// DealWithConflicts holds the logic for determining where priorities are in bookings
-func DealWithConflicts(request config.BookingRequest, conflicts [][]config.Booking) ([]string, error) {
-	var bookingConflictStatus []string
+func overwriteBookings(full bool, requestGeneral config.BookingRequest, requestSpecific config.BookingTimeslots, conflicts []config.Booking) ManageType {
 
-	for key, val := range request.Requests {
-		if len(conflicts[key]) == 0 {
-			bookingConflictStatus = append(bookingConflictStatus, ACCEPT)
-			continue
-		}
+	con := conflicts[0]
 
-		resourceNum, err := getNumberOfResources(request.Resource)
+	if full {
 
-		if err != nil {
-			return nil, err
-		}
-
-		if resourceNum > 0 {
-			if len(conflicts[key]) < resourceNum {
-				bookingConflictStatus = append(bookingConflictStatus, ACCEPT)
-				continue
-			} else {
-				bookingConflictStatus = append(bookingConflictStatus, REJECT)
-				continue
+		if requestGeneral.RequestLevel > con.RequestLevel {
+			return ManageType{
+				Header:   MANAGE,
+				Body:     TAKE,
+				Booking:  requestSpecific,
+				Conflict: con,
 			}
 		}
+		return ManageType{Header: REJECT, Booking: requestSpecific}
 
-		uniqueNum, err := getUniqueNumberOfResources(request.Resource)
+	}
 
-		if err != nil {
-			return nil, err
+	if requestGeneral.RequestLevel > con.RequestLevel {
+		// Ask to Switch
+		return ManageType{
+			Header:   MANAGE,
+			Body:     SWITCH,
+			Booking:  requestSpecific,
+			Conflict: con,
 		}
+	}
 
-		if len(conflicts[key]) >= uniqueNum {
-			bookingConflictStatus = append(bookingConflictStatus, REJECT)
+	// Can't Have Preference
+	return ManageType{
+		Header:   MANAGE,
+		Body:     OOF,
+		Booking:  requestSpecific,
+		Conflict: con,
+	}
+
+}
+
+// DealWithConflicts holds the logic for determining where priorities are in bookings
+func DealWithConflicts(request config.BookingRequest, conflicts [][]config.Booking) ([]ManageType, error) {
+	var bookingConflictStatus []ManageType
+
+	resourceNum, err := getNumberOfResources(request.Resource)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for key, val := range request.Requests {
+
+		if len(conflicts[key]) == 0 {
+			bookingConflictStatus = append(bookingConflictStatus, ManageType{Header: ACCEPT, Booking: val})
 			continue
+		} else if len(conflicts[key]) == resourceNum {
+			bookingConflictStatus = append(bookingConflictStatus, overwriteBookings(true, request, val, conflicts[key]))
+		} else {
+			preferenceInConflicts := false
+			for _, con := range conflicts[key] {
+				if request.Preference == con.Preference {
+					preferenceInConflicts = true
+					break
+				}
+			}
+			if !preferenceInConflicts {
+				bookingConflictStatus = append(bookingConflictStatus, ManageType{Header: ACCEPT, Booking: val})
+			} else {
+				bookingConflictStatus = append(bookingConflictStatus, overwriteBookings(false, request, val, conflicts[key]))
+			}
 		}
-
-		if request.Preference == 0 {
-			bookingConflictStatus = append(bookingConflictStatus, ACCEPT)
-			continue
-		}
-
-		// TODO
-
-		/*
-			Thoughts:
-			1) It doesn't matter if someone doesn't have a preference but is a higher priority
-			2) People can have higher priorities on non-unique resources
-			3) None of this is accounted for
-		*/
 
 	}
 
