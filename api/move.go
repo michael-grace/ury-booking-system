@@ -11,7 +11,7 @@ import (
 // MoveHandler allows bookings to be moved, relying on the logic in Add
 func MoveHandler(w http.ResponseWriter, r *http.Request) {
 
-	apiRequest, err := baseHTTPRequest(w, r)
+	apiRequest, err := baseHTTPRequest("MOVE", w, r)
 	if err != nil {
 		return
 	}
@@ -24,7 +24,7 @@ func MoveHandler(w http.ResponseWriter, r *http.Request) {
 	   API returns errors if they appear
 	*/
 
-	moveRequest, ok := apiRequest.Payload.(config.MoveRequest)
+	moveRequest, ok := apiRequest.(config.MoveRequest)
 
 	if !ok {
 		w.WriteHeader(http.StatusBadRequest)

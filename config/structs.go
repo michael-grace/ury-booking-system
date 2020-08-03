@@ -4,13 +4,6 @@ import (
 	"time"
 )
 
-// HTTPRequest is the layout all bodies in an api call are layed out
-// Authentication TBD
-type HTTPRequest struct {
-	MessageHead string      `json:"messageHead"`
-	Payload     interface{} `json:"payload"` // Possibly make a specific interface
-}
-
 // Booking is an actual booking in the system
 type Booking struct {
 	BookingID           int       `json:"bookingID"`

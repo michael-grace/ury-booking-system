@@ -15,12 +15,12 @@ func ManageHandler(w http.ResponseWriter, r *http.Request, inProgressBookings ma
 		First, sort the HTTP request
 	*/
 
-	apiRequest, err := baseHTTPRequest(w, r)
+	apiRequest, err := baseHTTPRequest("MAN", w, r)
 	if err != nil {
 		return
 	}
 
-	manageRequest, ok := apiRequest.Payload.(config.ManageRequest)
+	manageRequest, ok := apiRequest.(config.ManageRequest)
 
 	if !ok {
 		w.WriteHeader(http.StatusBadRequest)

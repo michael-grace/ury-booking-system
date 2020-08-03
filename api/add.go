@@ -7,7 +7,6 @@ import (
 	"github.com/michael-grace/ury-booking-system/logic"
 	"time"
 	// "io/ioutil"
-	"github.com/mitchellh/mapstructure"
 	"math/rand"
 	"net/http"
 )
@@ -20,15 +19,14 @@ func AddHandler(w http.ResponseWriter, r *http.Request, InProgressBookings map[i
 	   First, sort the HTTP Request
 	*/
 
-	apiRequest, err := baseHTTPRequest(w, r)
+	apiRequest, err := baseHTTPRequest("ADD", w, r)
 	if err != nil {
 		return
 	}
 
-	var addRequest config.BookingRequest
-	err = mapstructure.Decode(apiRequest.Payload, &addRequest)
+	addRequest, ok := apiRequest.(config.BookingRequest)
 
-	if err != nil {
+	if !ok {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, "Bad JSON - Add Object")
 		return

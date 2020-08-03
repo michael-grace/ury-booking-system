@@ -24,7 +24,7 @@ func cancelBookings(cancelRequest config.CancelRequest) []error {
 // CancelHandler allows bookings to be removed from the system
 func CancelHandler(w http.ResponseWriter, r *http.Request) {
 
-	apiRequest, err := baseHTTPRequest(w, r)
+	apiRequest, err := baseHTTPRequest("CNL", w, r)
 	if err != nil {
 		return
 	}
@@ -35,7 +35,7 @@ func CancelHandler(w http.ResponseWriter, r *http.Request) {
 	   HTTP writes any errors that occur, or success
 	*/
 
-	cancelRequest, ok := apiRequest.Payload.(config.CancelRequest)
+	cancelRequest, ok := apiRequest.(config.CancelRequest)
 	if !ok {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, "Bad JSON - Cancel Object")
