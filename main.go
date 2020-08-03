@@ -49,7 +49,8 @@ func main() {
 	http.HandleFunc("/cancel", api.CancelHandler)
 	http.HandleFunc("/move", api.MoveHandler)
 	http.HandleFunc("/manage", func(w http.ResponseWriter, r *http.Request) { api.ManageHandler(w, r, inProgressBookings) })
-	http.HandleFunc("/info", api.InformationHandler)
+
+	http.HandleFunc("/info/resources", api.ResourceHandler)
 
 	/*
 		Starts HTTP Server

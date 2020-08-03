@@ -7,27 +7,58 @@ import (
 	"net/http"
 )
 
-type Resource struct {
-	ResourceID int    `json:"resourceID"`
-	Name       string `json:"name"`
+// ResourceReturn is sent to the user containing all resources available
+type ResourceReturn struct {
+	Resources []Resource `json:"resources"`
 }
 
-func InformationHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(1)
-	rows, err := config.Database.Query("SELECT resources.resource AS ResourceID, resources.name AS Name FROM bookings.resources")
+// Resource is an individual type of resource
+type Resource struct {
+	ResourceID      int              `json:"resourceID"`
+	Name            string           `json:"name"`
+	UniqueResources []UniqueResource `json:"uniqueResources"`
+}
+
+// UniqueResource is an individual resource, which will be part of a type
+type UniqueResource struct {
+	UniqueID int    `json:"uniqueID"`
+	Name     string `json:"name"`
+}
+
+// ResourceHandler deals with requests for the resource information
+func ResourceHandler(w http.ResponseWriter, r *http.Request) {
+	rows, err := config.Database.Query("SELECT * FROM bookings.resources")
 	defer rows.Close()
 	if err != nil {
-		panic(err)
+		fmt.Fprint(w, err)
 	}
 
 	var resources []Resource
-	fmt.Println(2)
 	for rows.Next() {
 		var resource Resource
-		err = rows.Scan(&resource)
+		err = rows.Scan(&resource.ResourceID, &resource.Name)
 		if err != nil {
-			panic(err)
+			fmt.Fprint(w, err)
 		}
+
+		// Individual Resources
+		rows2, err := config.Database.Query("SELECT unique_resources.unique_id, unique_resources.name FROM bookings.unique_resources WHERE unique_resource.resource = $1", resource.ResourceID)
+		defer rows2.Close()
+		if err != nil {
+			fmt.Fprint(w, err)
+		}
+
+		var uniqueResources []UniqueResource
+
+		for rows2.Next() {
+			var unique UniqueResource
+			err = rows2.Scan(&unique.UniqueID, &unique.Name)
+			if err != nil {
+				fmt.Fprint(w, err)
+			}
+			uniqueResources = append(uniqueResources, unique)
+		}
+		resource.UniqueResources = uniqueResources
 		resources = append(resources, resource)
 	}
 
@@ -36,7 +67,8 @@ func InformationHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	fmt.Println(3)
+
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprint(w, jsonData)
+
 }
