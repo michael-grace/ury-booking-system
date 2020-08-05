@@ -69,3 +69,9 @@ type ManageRequest struct {
 	ProgressID    int           `json:"progressID"`
 	UserResponses []interface{} `json:"userResponses"`
 }
+
+type BookingGetRequest struct {
+	DateStart time.Time `json:"dateStart"`
+	Resource  string    `json:"resource"`
+	Bookings  []Booking `json:"bookings"`
+}
