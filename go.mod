@@ -2,7 +2,4 @@ module github.com/michael-grace/ury-booking-system
 
 go 1.13
 
-require (
-	github.com/lib/pq v1.5.2
-	github.com/mitchellh/mapstructure v1.3.3
-)
+require github.com/lib/pq v1.8.0
