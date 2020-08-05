@@ -19,6 +19,7 @@ func main() {
 
 	/*
 		Sets Config
+		This will also create config.Databse, which will be our DB connection.
 	*/
 
 	config.ConfigurationSetup()
@@ -39,6 +40,7 @@ func main() {
 	*/
 
 	inProgressBookings := make(map[int]config.InProgressBooking)
+
 	/*
 		Routes HTTP Calls
 	*/
@@ -55,6 +57,7 @@ func main() {
 	/*
 		Starts HTTP Server
 	*/
+
 	log.Printf("Listening on :%d\n", config.Config.Port)
 	err = http.ListenAndServe(fmt.Sprintf(":%d", config.Config.Port), nil)
 	if err != nil {

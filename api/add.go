@@ -38,9 +38,9 @@ func AddHandler(w http.ResponseWriter, r *http.Request, InProgressBookings map[i
 
 	var conflicts [][]config.Booking
 
-	// TODO Logic Here
 	getConflictQuery := `SELECT * FROM bookings.bookings WHERE bookings.resource=$1 AND 
-		NOT (bookings.end_time <= $2 OR bookings.start_time >= $3);`
+		NOT (bookings.end_time <= $2 OR bookings.start_time >= $3) 
+		ORDER BY bookings.request_level, bookings.application_datetime DESC;`
 
 	for _, requestTime := range addRequest.Requests {
 
@@ -48,7 +48,7 @@ func AddHandler(w http.ResponseWriter, r *http.Request, InProgressBookings map[i
 			Each DB Query (essentially timeslot)
 		*/
 
-		rows, err := config.Database.Query(getConflictQuery, addRequest.Resource, requestTime.StartTime, requestTime.EndTime) // requestTime gets used here
+		rows, err := config.Database.Query(getConflictQuery, addRequest.Resource, requestTime.StartTime, requestTime.EndTime)
 		if rows != nil {
 			defer rows.Close()
 		}

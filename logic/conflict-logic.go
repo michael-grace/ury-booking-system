@@ -27,25 +27,25 @@ func overwriteBookings(full bool, requestGeneral config.BookingRequest, requestS
 
 	if full {
 
-		if requestGeneral.RequestLevel > con.RequestLevel {
+		if requestGeneral.RequestLevel < con.RequestLevel { // Lower Number = Higher Priority
 			return config.ManageType{
 				Header:   MANAGE,
 				Body:     TAKE,
 				Booking:  requestSpecific,
-				Conflict: con,
+				Conflict: &con,
 			}
 		}
-		return config.ManageType{Header: REJECT, Booking: requestSpecific}
+		return config.ManageType{Header: REJECT, Booking: requestSpecific, Conflict: &con}
 
 	}
 
-	if requestGeneral.RequestLevel > con.RequestLevel {
+	if requestGeneral.RequestLevel < con.RequestLevel {
 		// Ask to Switch
 		return config.ManageType{
 			Header:   MANAGE,
 			Body:     SWITCH,
 			Booking:  requestSpecific,
-			Conflict: con,
+			Conflict: &con,
 		}
 	}
 
@@ -54,7 +54,7 @@ func overwriteBookings(full bool, requestGeneral config.BookingRequest, requestS
 		Header:   MANAGE,
 		Body:     OOF,
 		Booking:  requestSpecific,
-		Conflict: con,
+		Conflict: &con,
 	}
 
 }

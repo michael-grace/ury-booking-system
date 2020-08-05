@@ -55,7 +55,7 @@ type ManageType struct {
 	Header   string           `json:"header"`
 	Body     string           `json:"body"`
 	Booking  BookingTimeslots `json:"booking"`
-	Conflict Booking          `json:"conflict"`
+	Conflict *Booking         `json:"conflict"`
 }
 
 // InProgressBooking is for a booking that is waiting for user confirmation
