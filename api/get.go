@@ -13,7 +13,7 @@ import (
 // GetHandler deals with returning bookings within a timeframe in the body
 func GetHandler(w http.ResponseWriter, r *http.Request) {
 
-	getData, err := url.ParseQuery(r.URL.String()[1:])
+	getData, err := url.ParseQuery(r.URL.String()[5:])
 
 	if err != nil {
 		fmt.Fprintf(w, "Bad GET Request: %v", err)
@@ -49,8 +49,8 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 
 	rows, err := config.Database.Query(`SELECT * FROM bookings.bookings
 	INNER JOIN bookings.resources USING (resource)
-	WHERE (bookings.start_time >= $1 AND bookings.end_time <= $2)
-	OR (bookings.end_time >= $1 AND bookings.end_time <= $2)
+	WHERE ((bookings.start_time >= $1 AND bookings.end_time <= $2)
+	OR (bookings.end_time >= $1 AND bookings.end_time <= $2))
 	AND resources.name = $3;`, reqDate, reqDate.Add(24*time.Hour), reqResource)
 	defer rows.Close()
 	if err != nil {
@@ -63,6 +63,7 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
 		var booking config.Booking
+		var name string // we don't actually care about this, but inner join returns it
 		err = rows.Scan(
 			&booking.BookingID,
 			&booking.MemberID,
@@ -75,10 +76,11 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 			&booking.EndTime,
 			&booking.PublicID,
 			&booking.ApplicationDateTime,
+			&name,
 		)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "Database Output Flawed")
+			fmt.Fprintf(w, "Database Output Flawed: %v", err)
 			return
 		}
 
